@@ -18,22 +18,92 @@ export default function ChatbotPlaceholder() {
     setIsLoading(true);
 
     try {
-      // Using Gradio Client for reliable connection to your Professional Dialog agent
-      const client = await Client.connect("amar1087/professional_dialogue");
-      const result = await client.predict("/predict", [userMessage]);
-      
-      if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
-        const response = result.data[0];
-        setMessages(prev => [...prev, { role: 'assistant', content: response }]);
-      } else {
-        throw new Error('No response received from the agent');
+      // Method 1: Try Gradio Client first
+      try {
+        const client = await Client.connect("amar1087/professional_dialogue");
+        const result = await client.predict("/predict", { text: userMessage });
+        
+        if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
+          const response = result.data[0];
+          setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+          return;
+        }
+      } catch (clientError) {
+        console.log('Gradio client failed, trying direct API approach:', clientError);
       }
+
+      // Method 2: Direct API call as fallback
+      const response = await fetch('https://amar1087-professional-dialogue.hf.space/call/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: [userMessage],
+          session_hash: Math.random().toString(36).substring(7)
+        }),
+      });
+
+      if (response.ok) {
+        const submitData = await response.json();
+        
+        // Get result using event stream
+        const resultResponse = await fetch(`https://amar1087-professional-dialogue.hf.space/call/predict/${submitData.event_id}`);
+        const reader = resultResponse.body?.getReader();
+        
+        if (reader) {
+          const decoder = new TextDecoder();
+          let result = '';
+          
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  if (Array.isArray(data) && data.length > 0) {
+                    result = data[0];
+                  }
+                } catch (e) {
+                  // Continue processing
+                }
+              }
+            }
+          }
+          
+          if (result) {
+            setMessages(prev => [...prev, { role: 'assistant', content: result }]);
+            return;
+          }
+        }
+      }
+
+      throw new Error('All connection methods failed');
+      
     } catch (error) {
       console.error('Chatbot error:', error);
-      // Fallback response for connection issues
+      // Smart fallback response based on user input
+      let fallbackResponse = "Hello! I'm Amarjeet's AI assistant. I have 15+ years of experience in AI solutions, full-stack development, and cloud architecture.";
+      
+      const input = userMessage.toLowerCase();
+      if (input.includes('ai') || input.includes('agent') || input.includes('crewai') || input.includes('langgraph')) {
+        fallbackResponse = "I specialize in AI agent development using CrewAI, LangGraph, and AutoGen. I've built custom AI solutions for business process automation and data analysis. I work with OpenAI SDK and Hugging Face for implementing intelligent systems. What specific AI topic interests you?";
+      } else if (input.includes('angular') || input.includes('react') || input.includes('frontend')) {
+        fallbackResponse = "I'm an expert in frontend development with 15+ years of experience. I specialize in Angular and React, building scalable web applications with TypeScript. I've developed enterprise solutions, mobile apps with React Native and Ionic, and modern UI/UX interfaces. What frontend challenge can I help with?";
+      } else if (input.includes('aws') || input.includes('cloud') || input.includes('backend')) {
+        fallbackResponse = "I'm an AWS Cloud Architect with extensive experience in serverless solutions. I work with Lambda, EC2, S3, API Gateway, and DynamoDB. I've built scalable backend systems with Node.js and implemented CI/CD pipelines. I can discuss cloud architecture patterns and best practices. What cloud topic interests you?";
+      } else if (input.includes('project') || input.includes('experience') || input.includes('work')) {
+        fallbackResponse = "I've led development teams at companies like Forwood Enterprises, building enterprise applications and the Apps Platform. My recent work includes AI consulting projects using CrewAI and LangGraph. I've delivered mobile apps, dashboard systems, and cloud-native solutions. Would you like to know about specific projects or technologies?";
+      }
+      
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "I'm Amarjeet's professional assistant. I can help you learn about her 15+ years of experience in AI solutions, full-stack development, and cloud architecture. I specialize in CrewAI, LangGraph, Angular, React, Node.js, and AWS services. What would you like to know about her expertise?" 
+        content: fallbackResponse
       }]);
     } finally {
       setIsLoading(false);
