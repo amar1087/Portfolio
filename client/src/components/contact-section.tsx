@@ -145,8 +145,12 @@ export default function ContactSection() {
             <div className="space-y-4">
               {[
                 {
+                  title: "AI Agent Development",
+                  description: "Custom AI solutions using CrewAI, LangGraph, and AutoGen",
+                },
+                {
                   title: "Full Stack Development",
-                  description: "Angular, React, Node.js applications with modern architectures",
+                  description: "Angular, React, Node.js applications with AWS deployment",
                 },
                 {
                   title: "Cloud Architecture",
@@ -155,10 +159,6 @@ export default function ContactSection() {
                 {
                   title: "Mobile Applications",
                   description: "Cross-platform mobile development and optimization",
-                },
-                {
-                  title: "Enterprise Solutions",
-                  description: "Scalable applications with performance optimization",
                 },
               ].map((service, index) => (
                 <div key={index} className="flex items-start space-x-3">

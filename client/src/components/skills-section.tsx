@@ -36,6 +36,7 @@ export default function SkillsSection() {
   }
 
   const primarySkills = skills.filter(skill => skill.category === 'primary');
+  const aiSkills = skills.filter(skill => skill.category === 'ai');
   const cloudSkills = skills.filter(skill => skill.category === 'cloud');
   const toolSkills = skills.filter(skill => skill.category === 'tools');
 
@@ -69,7 +70,21 @@ export default function SkillsSection() {
         </div>
 
         {/* Secondary Skills Categorized */}
-        <div className="grid md:grid-cols-2 gap-8 fade-in">
+        <div className="grid md:grid-cols-3 gap-8 fade-in">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h4 className="font-semibold text-slate-900 mb-4">AI & Machine Learning</h4>
+            <div className="flex flex-wrap gap-2">
+              {aiSkills.map((skill) => (
+                <span
+                  key={skill.id}
+                  className="inline-block bg-accent text-slate-700 px-3 py-1 rounded-full text-sm"
+                  data-testid={`ai-skill-${skill.title.toLowerCase().replace(/\s+/g, '-')}`}
+                >
+                  {skill.title}
+                </span>
+              ))}
+            </div>
+          </div>
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
             <h4 className="font-semibold text-slate-900 mb-4">Cloud & AWS</h4>
             <div className="flex flex-wrap gap-2">
@@ -85,7 +100,7 @@ export default function SkillsSection() {
             </div>
           </div>
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h4 className="font-semibold text-slate-900 mb-4">Development Tools & Frameworks</h4>
+            <h4 className="font-semibold text-slate-900 mb-4">Development Tools</h4>
             <div className="flex flex-wrap gap-2">
               {toolSkills.map((skill) => (
                 <span

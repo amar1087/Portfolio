@@ -44,23 +44,23 @@ export default function HeroSection() {
         <div className="grid lg:grid-cols-3 gap-12 items-center">
           <div className="lg:col-span-2">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 fade-in">
-              Senior Full Stack Developer &
-              <span className="text-primary"> Cloud Architect</span>
+              AI Solutions Consultant &
+              <span className="text-primary"> Full Stack Developer</span>
             </h1>
             <p className="text-xl text-secondary mb-8 leading-relaxed fade-in">
               {contactInfo.bio}
             </p>
             <div className="grid sm:grid-cols-2 gap-6 mb-8 fade-in">
               <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <h3 className="font-semibold text-slate-900 mb-2">Frontend Excellence</h3>
+                <h3 className="font-semibold text-slate-900 mb-2">AI & Agent Development</h3>
                 <p className="text-sm text-secondary">
-                  Angular, React, TypeScript, JavaScript, Mobile Development
+                  CrewAI, LangGraph, AutoGen, OpenAI SDK, Hugging Face
                 </p>
               </div>
               <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <h3 className="font-semibold text-slate-900 mb-2">Backend & Cloud</h3>
+                <h3 className="font-semibold text-slate-900 mb-2">Full Stack & Cloud</h3>
                 <p className="text-sm text-secondary">
-                  Node.js, AWS Cloud Architecture, PostgreSQL, MongoDB
+                  Angular, React, Node.js, AWS Architecture, Mobile Development
                 </p>
               </div>
             </div>

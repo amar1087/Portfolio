@@ -33,7 +33,7 @@ export class MemStorage implements IStorage {
       location: "Delhi, India",
       linkedin: "https://www.linkedin.com/in/amarjeet-kaur-1087",
       website: "https://amarjeetkaur.com",
-      bio: "Accomplished Full Stack Developer and AWS Cloud Architect with 15+ years of expertise in designing scalable web applications and enterprise solutions. I specialize in Angular, React, Node.js, and AWS cloud services, delivering high-performance applications that drive business growth. My experience spans mobile development with React Native and Ionic, database optimization with PostgreSQL and MongoDB, and implementing CI/CD pipelines for seamless deployments. I excel at leading development teams, mentoring junior developers, and architecting robust solutions that enhance user experience and operational efficiency."
+      bio: "AI Solutions Consultant and Full Stack Developer with 15+ years of expertise in designing intelligent automation systems and scalable web applications. I specialize in AI agent development using CrewAI, LangGraph, and AutoGen, combined with full-stack technologies like Angular, React, Node.js, and AWS cloud services. My experience spans from traditional enterprise solutions to cutting-edge AI implementations, mobile development, and cloud architecture. I excel at bridging the gap between AI capabilities and practical business solutions, delivering systems that enhance productivity and drive innovation."
     };
   }
 
@@ -62,6 +62,14 @@ export class MemStorage implements IStorage {
       { type: 'skill', title: 'DynamoDB', category: 'cloud', priority: 6, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
       { type: 'skill', title: 'Jenkins', category: 'cloud', priority: 7, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
       { type: 'skill', title: 'CI/CD', category: 'cloud', priority: 8, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
+
+      // AI & Machine Learning Skills
+      { type: 'skill', title: 'CrewAI', category: 'ai', priority: 1, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
+      { type: 'skill', title: 'LangGraph', category: 'ai', priority: 2, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
+      { type: 'skill', title: 'AutoGen', category: 'ai', priority: 3, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
+      { type: 'skill', title: 'OpenAI SDK', category: 'ai', priority: 4, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
+      { type: 'skill', title: 'Hugging Face', category: 'ai', priority: 5, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
+      { type: 'skill', title: 'AI Agents', category: 'ai', priority: 6, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
 
       // Development Tools & Frameworks
       { type: 'skill', title: 'Jest', category: 'tools', priority: 1, description: null, company: null, location: null, startDate: null, endDate: null, technologies: null, achievements: null },
