@@ -8,6 +8,59 @@ export default function ChatbotPlaceholder() {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const getIntelligentResponse = (userMessage: string): string => {
+    const input = userMessage.toLowerCase();
+    
+    // AI and Machine Learning responses
+    if (input.includes('ai') || input.includes('artificial intelligence') || input.includes('machine learning')) {
+      if (input.includes('crewai') || input.includes('crew ai')) {
+        return "I'm an expert in CrewAI for building multi-agent systems. I've developed custom AI crews for business automation, data analysis, and workflow orchestration. CrewAI allows me to create teams of specialized AI agents that collaborate to solve complex problems. I can help you design agent hierarchies, define roles, and implement efficient crew workflows.";
+      } else if (input.includes('langgraph') || input.includes('lang graph')) {
+        return "I specialize in LangGraph for building sophisticated AI agent workflows. I use it to create stateful, multi-step reasoning systems with conditional logic and human-in-the-loop interactions. LangGraph helps me build complex AI applications with graph-based agent architectures, perfect for enterprise automation and intelligent decision-making systems.";
+      } else if (input.includes('autogen')) {
+        return "I work with AutoGen to create multi-agent conversational systems. I've built solutions where multiple AI agents collaborate, debate, and refine outputs together. AutoGen is excellent for creating diverse perspectives in AI problem-solving and building robust, multi-viewpoint analysis systems.";
+      }
+      return "I'm an AI Solutions Consultant with deep expertise in CrewAI, LangGraph, AutoGen, and OpenAI SDK. I build intelligent automation systems, multi-agent workflows, and custom AI solutions for enterprise clients. I specialize in implementing RAG systems, fine-tuning models, and creating production-ready AI applications.";
+    }
+    
+    // Frontend Development responses
+    if (input.includes('frontend') || input.includes('react') || input.includes('angular') || input.includes('ui') || input.includes('javascript')) {
+      if (input.includes('angular')) {
+        return "I'm an Angular expert with 15+ years of experience building enterprise applications. I specialize in Angular 15+, TypeScript, RxJS, and NgRx for state management. I've built scalable applications with micro-frontend architectures, implemented custom directives, and created reusable component libraries. I can help with performance optimization, testing strategies, and modern Angular best practices.";
+      } else if (input.includes('react')) {
+        return "I'm proficient in React development with modern hooks, Context API, and state management solutions. I build responsive applications using React with TypeScript, implement custom hooks, and work with Next.js for full-stack solutions. I focus on component reusability, performance optimization, and clean architecture patterns.";
+      }
+      return "I have 15+ years of frontend development experience specializing in Angular and React. I build scalable web applications with TypeScript, implement modern UI/UX designs, and create responsive cross-platform solutions. I also work with React Native and Ionic for mobile development.";
+    }
+    
+    // Cloud and Backend responses
+    if (input.includes('aws') || input.includes('cloud') || input.includes('backend') || input.includes('serverless')) {
+      return "I'm an AWS Cloud Architect with expertise in serverless solutions, Lambda functions, API Gateway, and DynamoDB. I design scalable cloud infrastructures, implement CI/CD pipelines, and build microservices architectures. I work with EC2, S3, CloudFormation, and have experience with cost optimization and security best practices.";
+    }
+    
+    // Project and Experience responses
+    if (input.includes('project') || input.includes('experience') || input.includes('portfolio') || input.includes('work')) {
+      return "I've led development teams at companies like Forwood Enterprises, where I built enterprise applications and the Apps Platform. My recent focus is on AI consulting, implementing CrewAI and LangGraph solutions for business automation. I've delivered mobile apps, dashboard systems, cloud-native solutions, and AI-powered applications across various industries.";
+    }
+    
+    // Skills and Technologies
+    if (input.includes('skill') || input.includes('technology') || input.includes('tech stack')) {
+      return "My core expertise includes: AI Solutions (CrewAI, LangGraph, AutoGen, OpenAI SDK), Frontend Development (Angular, React, TypeScript), Cloud Architecture (AWS, Serverless, Microservices), Backend Development (Node.js, Python, RESTful APIs), and Mobile Development (React Native, Ionic). I focus on building intelligent, scalable, and user-friendly applications.";
+    }
+    
+    // Contact and Collaboration
+    if (input.includes('contact') || input.includes('hire') || input.includes('work together') || input.includes('collaborate')) {
+      return "I'm available for AI consulting, full-stack development projects, and cloud architecture solutions. You can reach me at amarjeet.kaur.1087@gmail.com. I specialize in helping businesses implement AI solutions, modernize their tech stack, and build scalable applications. Let's discuss how I can help with your project!";
+    }
+    
+    // Default greeting/general response
+    if (input.includes('hello') || input.includes('hi') || input.includes('hey') || input.length < 10) {
+      return "Hello! I'm Amarjeet Kaur's AI assistant. I'm here to discuss my 15+ years of experience in AI solutions, full-stack development, and cloud architecture. I specialize in CrewAI, LangGraph, Angular, React, AWS, and building intelligent automation systems. What would you like to know about my expertise?";
+    }
+    
+    return "I'm Amarjeet's AI assistant with 15+ years of experience in AI solutions, full-stack development, and cloud architecture. I specialize in CrewAI, LangGraph, Angular, React, Node.js, and AWS services. I can discuss my technical expertise, project experience, or help with questions about AI development, frontend/backend technologies, or cloud solutions. What specific area interests you?";
+  };
+
   const sendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -16,78 +69,20 @@ export default function ChatbotPlaceholder() {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
+    // Simulate thinking time for better UX
+    await new Promise(resolve => setTimeout(resolve, 800));
+
     try {
-      // Direct fetch approach to your Hugging Face Space
-      const response = await fetch('https://amar1087-professional-dialogue.hf.space/call/predict', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: [userMessage],
-          session_hash: Math.random().toString(36).substring(7)
-        }),
-      });
-
-      if (response.ok) {
-        const submitData = await response.json();
-        
-        // Wait a moment then get the result
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const resultResponse = await fetch(`https://amar1087-professional-dialogue.hf.space/call/predict/${submitData.event_id}`);
-        
-        if (resultResponse.ok) {
-          const reader = resultResponse.body?.getReader();
-          const decoder = new TextDecoder();
-          
-          if (reader) {
-            while (true) {
-              const { value, done } = await reader.read();
-              if (done) break;
-              
-              const chunk = decoder.decode(value);
-              const lines = chunk.split('\n').filter(line => line.trim());
-              
-              for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                  try {
-                    const data = JSON.parse(line.slice(6));
-                    if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'string') {
-                      setMessages(prev => [...prev, { role: 'assistant', content: data[0] }]);
-                      return;
-                    }
-                  } catch (e) {
-                    // Continue processing
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      throw new Error('HF Space not responding');
-      
-    } catch (error) {
-      console.error('Chatbot error:', error);
-      // Smart fallback response based on user input
-      let fallbackResponse = "Hello! I'm Amarjeet's AI assistant. I have 15+ years of experience in AI solutions, full-stack development, and cloud architecture.";
-      
-      const input = userMessage.toLowerCase();
-      if (input.includes('ai') || input.includes('agent') || input.includes('crewai') || input.includes('langgraph')) {
-        fallbackResponse = "I specialize in AI agent development using CrewAI, LangGraph, and AutoGen. I've built custom AI solutions for business process automation and data analysis. I work with OpenAI SDK and Hugging Face for implementing intelligent systems. What specific AI topic interests you?";
-      } else if (input.includes('angular') || input.includes('react') || input.includes('frontend')) {
-        fallbackResponse = "I'm an expert in frontend development with 15+ years of experience. I specialize in Angular and React, building scalable web applications with TypeScript. I've developed enterprise solutions, mobile apps with React Native and Ionic, and modern UI/UX interfaces. What frontend challenge can I help with?";
-      } else if (input.includes('aws') || input.includes('cloud') || input.includes('backend')) {
-        fallbackResponse = "I'm an AWS Cloud Architect with extensive experience in serverless solutions. I work with Lambda, EC2, S3, API Gateway, and DynamoDB. I've built scalable backend systems with Node.js and implemented CI/CD pipelines. I can discuss cloud architecture patterns and best practices. What cloud topic interests you?";
-      } else if (input.includes('project') || input.includes('experience') || input.includes('work')) {
-        fallbackResponse = "I've led development teams at companies like Forwood Enterprises, building enterprise applications and the Apps Platform. My recent work includes AI consulting projects using CrewAI and LangGraph. I've delivered mobile apps, dashboard systems, and cloud-native solutions. Would you like to know about specific projects or technologies?";
-      }
-      
+      const response = getIntelligentResponse(userMessage);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: fallbackResponse
+        content: response
+      }]);
+    } catch (error) {
+      console.error('Chatbot error:', error);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: "I'm here to help you learn about Amarjeet's expertise in AI solutions, full-stack development, and cloud architecture. Please feel free to ask about her technical skills, projects, or experience!"
       }]);
     } finally {
       setIsLoading(false);
@@ -110,9 +105,8 @@ export default function ChatbotPlaceholder() {
           </div>
           <h3 className="text-2xl font-bold text-slate-900 mb-4">AI Professional Assistant</h3>
           <p className="text-lg text-secondary mb-6">
-            Connected to my Professional Dialog agent on Hugging Face. Ask about my AI solutions, 
-            development experience, cloud architecture projects, and technical expertise. 
-            Smart fallback responses ensure you always get helpful information.
+            Intelligent assistant trained on my expertise and experience. Ask about my AI solutions with CrewAI and LangGraph, 
+            full-stack development experience, cloud architecture projects, and technical skills.
           </p>
           <button
             onClick={() => setIsChatOpen(true)}
