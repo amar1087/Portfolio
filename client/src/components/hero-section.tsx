@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { User, MapPin, Award } from "lucide-react";
 import type { ContactInfo } from "@shared/schema";
+import profileImage from "@assets/WhatsApp Image 2025-01-20 at 17.28.28 (1)_1756222472242.jpeg";
 
 export default function HeroSection() {
   const { data: contactInfo, isLoading } = useQuery<ContactInfo>({
@@ -83,8 +84,12 @@ export default function HeroSection() {
           </div>
           <div className="lg:col-span-1">
             <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 text-center">
-              <div className="w-48 h-48 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center mb-6">
-                <User className="w-24 h-24 text-primary" />
+              <div className="w-48 h-48 mx-auto bg-white rounded-full shadow-lg overflow-hidden mb-6">
+                <img 
+                  src={profileImage} 
+                  alt="Amarjeet Kaur - AI Solutions Consultant & Full Stack Developer" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h3 className="font-bold text-lg text-slate-900 mb-2">
                 Based in {contactInfo.location}
