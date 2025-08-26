@@ -1,6 +1,6 @@
 # Overview
 
-This is a professional portfolio website built as a full-stack application showcasing Amarjeet Kaur, a Senior Full Stack Developer & Cloud Architect with 15+ years of experience. The application features a React frontend with a Node.js Express backend, designed to display portfolio information including experience, skills, projects, and contact details. The site includes an integrated AI chatbot powered by Hugging Face Spaces for professional dialogue and is built with modern web technologies for optimal performance and user experience.
+This is a professional portfolio website built as a full-stack application showcasing Amarjeet Kaur, a Senior Full Stack Developer & Cloud Architect with 15+ years of experience. The application features a React frontend with a Node.js Express backend, designed to display portfolio information including experience, skills, projects, and contact details. The site includes an intelligent AI assistant that provides contextual responses about Amarjeet's expertise in AI solutions, full-stack development, and cloud architecture. The application is production-ready and optimized for AWS deployment with comprehensive build tools and deployment configurations.
 
 # User Preferences
 
