@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { MessageCircle, Send, X, Minimize2 } from "lucide-react";
-import { Client } from "@gradio/client";
 
 export default function ChatbotPlaceholder() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -18,21 +17,7 @@ export default function ChatbotPlaceholder() {
     setIsLoading(true);
 
     try {
-      // Method 1: Try Gradio Client first
-      try {
-        const client = await Client.connect("amar1087/professional_dialogue");
-        const result = await client.predict("/predict", { text: userMessage });
-        
-        if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
-          const response = result.data[0];
-          setMessages(prev => [...prev, { role: 'assistant', content: response }]);
-          return;
-        }
-      } catch (clientError) {
-        console.log('Gradio client failed, trying direct API approach:', clientError);
-      }
-
-      // Method 2: Direct API call as fallback
+      // Direct fetch approach to your Hugging Face Space
       const response = await fetch('https://amar1087-professional-dialogue.hf.space/call/predict', {
         method: 'POST',
         headers: {
@@ -47,43 +32,42 @@ export default function ChatbotPlaceholder() {
       if (response.ok) {
         const submitData = await response.json();
         
-        // Get result using event stream
-        const resultResponse = await fetch(`https://amar1087-professional-dialogue.hf.space/call/predict/${submitData.event_id}`);
-        const reader = resultResponse.body?.getReader();
+        // Wait a moment then get the result
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        if (reader) {
+        const resultResponse = await fetch(`https://amar1087-professional-dialogue.hf.space/call/predict/${submitData.event_id}`);
+        
+        if (resultResponse.ok) {
+          const reader = resultResponse.body?.getReader();
           const decoder = new TextDecoder();
-          let result = '';
           
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n');
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                try {
-                  const data = JSON.parse(line.slice(6));
-                  if (Array.isArray(data) && data.length > 0) {
-                    result = data[0];
+          if (reader) {
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              
+              const chunk = decoder.decode(value);
+              const lines = chunk.split('\n').filter(line => line.trim());
+              
+              for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                  try {
+                    const data = JSON.parse(line.slice(6));
+                    if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'string') {
+                      setMessages(prev => [...prev, { role: 'assistant', content: data[0] }]);
+                      return;
+                    }
+                  } catch (e) {
+                    // Continue processing
                   }
-                } catch (e) {
-                  // Continue processing
                 }
               }
             }
           }
-          
-          if (result) {
-            setMessages(prev => [...prev, { role: 'assistant', content: result }]);
-            return;
-          }
         }
       }
 
-      throw new Error('All connection methods failed');
+      throw new Error('HF Space not responding');
       
     } catch (error) {
       console.error('Chatbot error:', error);
@@ -126,8 +110,9 @@ export default function ChatbotPlaceholder() {
           </div>
           <h3 className="text-2xl font-bold text-slate-900 mb-4">AI Professional Assistant</h3>
           <p className="text-lg text-secondary mb-6">
-            Powered by my custom Professional Dialog agent on Hugging Face. Ask about my AI solutions, 
-            development experience, cloud architecture projects, and technical expertise.
+            Connected to my Professional Dialog agent on Hugging Face. Ask about my AI solutions, 
+            development experience, cloud architecture projects, and technical expertise. 
+            Smart fallback responses ensure you always get helpful information.
           </p>
           <button
             onClick={() => setIsChatOpen(true)}
@@ -173,7 +158,7 @@ export default function ChatbotPlaceholder() {
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   {messages.length === 0 && (
                     <div className="text-secondary text-sm">
-                      👋 Hi! I'm Amarjeet's AI assistant. Ask me about her AI solutions, full-stack development experience, AWS cloud projects, or any technical expertise. I'm powered by her Professional Dialog agent on Hugging Face!
+                      👋 Hi! I'm Amarjeet's AI assistant. Ask me about her AI solutions with CrewAI and LangGraph, full-stack development experience, AWS cloud projects, or any technical expertise!
                     </div>
                   )}
                   {messages.map((message, index) => (
