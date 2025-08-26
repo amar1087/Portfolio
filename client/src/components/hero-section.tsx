@@ -84,11 +84,12 @@ export default function HeroSection() {
           </div>
           <div className="lg:col-span-1">
             <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 text-center">
-              <div className="w-48 h-48 mx-auto bg-white rounded-full shadow-lg overflow-hidden mb-6">
+              <div className="w-52 h-52 mx-auto bg-white rounded-full shadow-lg overflow-hidden mb-6">
                 <img 
                   src={profileImage} 
                   alt="Amarjeet Kaur - AI Solutions Consultant & Full Stack Developer" 
                   className="w-full h-full object-cover"
+                  style={{ objectPosition: '50% 20%' }}
                 />
               </div>
               <h3 className="font-bold text-lg text-slate-900 mb-2">
