@@ -14,8 +14,8 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-4">Amarjeet Kaur</h3>
             <p className="text-slate-400 mb-4">
-              AI Solutions Consultant & Full Stack Developer specializing in intelligent automation
-              and scalable cloud architectures.
+              Senior Full Stack Developer & Cloud Architect specializing in scalable web applications
+              and enterprise solutions.
             </p>
           </div>
           <div>
@@ -43,10 +43,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Specializations</h4>
             <ul className="space-y-2 text-slate-400">
-              <li>AI Agent Development</li>
-              <li>AWS Cloud Architecture</li>
               <li>Full Stack Development</li>
+              <li>AWS Cloud Architecture</li>
               <li>Mobile Applications</li>
+              <li>Enterprise Solutions</li>
               <li>Performance Optimization</li>
             </ul>
           </div>

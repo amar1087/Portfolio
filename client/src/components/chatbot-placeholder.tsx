@@ -1,6 +1,62 @@
-import { MessageCircle, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { MessageCircle, Send, X, Minimize2 } from "lucide-react";
 
 export default function ChatbotPlaceholder() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendMessage = async () => {
+    if (!inputMessage.trim()) return;
+
+    const userMessage = inputMessage.trim();
+    setInputMessage('');
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsLoading(true);
+
+    try {
+      // Using Hugging Face Spaces API endpoint
+      const response = await fetch('https://amar1087-professional-dialogue.hf.space/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          conversation_history: messages
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessages(prev => [...prev, { role: 'assistant', content: data.response || "I'm here to help you learn about Amarjeet's professional experience and skills." }]);
+      } else {
+        // Fallback response
+        setMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: "I'm Amarjeet's professional assistant. I can help you learn about her 15+ years of full-stack development experience, expertise in Angular, React, Node.js, AWS cloud architecture, and her work on enterprise applications. What would you like to know?" 
+        }]);
+      }
+    } catch (error) {
+      // Fallback response for network errors
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: "I'm Amarjeet's professional assistant. I can help you learn about her 15+ years of full-stack development experience, expertise in Angular, React, Node.js, AWS cloud architecture, and her work on enterprise applications. What would you like to know?" 
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -10,28 +66,106 @@ export default function ChatbotPlaceholder() {
           </div>
           <h3 className="text-2xl font-bold text-slate-900 mb-4">Personal AI Assistant</h3>
           <p className="text-lg text-secondary mb-6">
-            Coming Soon: Interactive chatbot powered by AI to answer questions about my experience,
-            skills, and projects. Get instant insights into my technical expertise and career journey.
+            Interactive chatbot to answer questions about my experience, skills, and projects. 
+            Get instant insights into my technical expertise and career journey.
           </p>
-          <div className="inline-flex items-center space-x-2 bg-white px-4 py-2 rounded-lg border border-slate-200">
-            <div className="relative">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <div className="absolute inset-0 animate-pulse">
-                <Sparkles className="w-4 h-4 text-primary/50" />
+          <button
+            onClick={() => setIsChatOpen(true)}
+            className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+            data-testid="button-open-chat"
+          >
+            <MessageCircle className="w-5 h-5" />
+            Chat with My AI Assistant
+          </button>
+        </div>
+
+        {/* Chat Interface */}
+        {isChatOpen && (
+          <div className={`fixed bottom-4 right-4 bg-white rounded-lg shadow-2xl border border-slate-200 z-50 ${isMinimized ? 'h-16' : 'h-96'} w-80 flex flex-col`}>
+            {/* Chat Header */}
+            <div className="bg-primary text-white px-4 py-3 rounded-t-lg flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-5 h-5" />
+                <span className="font-medium">Professional Assistant</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsMinimized(!isMinimized)}
+                  className="text-white/80 hover:text-white transition-colors"
+                  data-testid="button-minimize-chat"
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setIsChatOpen(false)}
+                  className="text-white/80 hover:text-white transition-colors"
+                  data-testid="button-close-chat"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             </div>
-            <span className="text-sm text-secondary">AI Integration in Development</span>
+
+            {/* Chat Content */}
+            {!isMinimized && (
+              <>
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                  {messages.length === 0 && (
+                    <div className="text-secondary text-sm">
+                      👋 Hi! I'm here to help you learn about Amarjeet's professional experience. Ask me anything about her skills, projects, or career!
+                    </div>
+                  )}
+                  {messages.map((message, index) => (
+                    <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
+                        message.role === 'user' 
+                          ? 'bg-primary text-white' 
+                          : 'bg-slate-100 text-slate-900'
+                      }`}>
+                        {message.content}
+                      </div>
+                    </div>
+                  ))}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-slate-100 text-slate-900 px-3 py-2 rounded-lg text-sm">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                          <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Input */}
+                <div className="border-t border-slate-200 p-4">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Ask about my experience..."
+                      className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      data-testid="input-chat-message"
+                    />
+                    <button
+                      onClick={sendMessage}
+                      disabled={!inputMessage.trim() || isLoading}
+                      className="bg-primary text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      data-testid="button-send-message"
+                    >
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-          <div className="mt-6 text-sm text-slate-600">
-            <p className="mb-2">
-              This will implement a conversational AI agent using frameworks like CrewAI or LangGraph
-            </p>
-            <p>
-              Ask questions about technologies, projects, or career experiences and get detailed,
-              contextual responses
-            </p>
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );
