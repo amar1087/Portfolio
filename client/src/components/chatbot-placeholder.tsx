@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MessageCircle, Send, X, Minimize2 } from "lucide-react";
+import { Client } from "@gradio/client";
 
 export default function ChatbotPlaceholder() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -17,33 +18,22 @@ export default function ChatbotPlaceholder() {
     setIsLoading(true);
 
     try {
-      // Using Hugging Face Spaces API endpoint
-      const response = await fetch('https://amar1087-professional-dialogue.hf.space/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          conversation_history: messages
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setMessages(prev => [...prev, { role: 'assistant', content: data.response || "I'm here to help you learn about Amarjeet's professional experience and skills." }]);
+      // Using Gradio Client for reliable connection to your Professional Dialog agent
+      const client = await Client.connect("amar1087/professional_dialogue");
+      const result = await client.predict("/predict", [userMessage]);
+      
+      if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
+        const response = result.data[0];
+        setMessages(prev => [...prev, { role: 'assistant', content: response }]);
       } else {
-        // Fallback response
-        setMessages(prev => [...prev, { 
-          role: 'assistant', 
-          content: "I'm Amarjeet's professional assistant. I can help you learn about her 15+ years of full-stack development experience, expertise in Angular, React, Node.js, AWS cloud architecture, and her work on enterprise applications. What would you like to know?" 
-        }]);
+        throw new Error('No response received from the agent');
       }
     } catch (error) {
-      // Fallback response for network errors
+      console.error('Chatbot error:', error);
+      // Fallback response for connection issues
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "I'm Amarjeet's professional assistant. I can help you learn about her 15+ years of full-stack development experience, expertise in Angular, React, Node.js, AWS cloud architecture, and her work on enterprise applications. What would you like to know?" 
+        content: "I'm Amarjeet's professional assistant. I can help you learn about her 15+ years of experience in AI solutions, full-stack development, and cloud architecture. I specialize in CrewAI, LangGraph, Angular, React, Node.js, and AWS services. What would you like to know about her expertise?" 
       }]);
     } finally {
       setIsLoading(false);
@@ -64,10 +54,10 @@ export default function ChatbotPlaceholder() {
           <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-6">
             <MessageCircle className="w-8 h-8 text-primary" />
           </div>
-          <h3 className="text-2xl font-bold text-slate-900 mb-4">Personal AI Assistant</h3>
+          <h3 className="text-2xl font-bold text-slate-900 mb-4">AI Professional Assistant</h3>
           <p className="text-lg text-secondary mb-6">
-            Interactive chatbot to answer questions about my experience, skills, and projects. 
-            Get instant insights into my technical expertise and career journey.
+            Powered by my custom Professional Dialog agent on Hugging Face. Ask about my AI solutions, 
+            development experience, cloud architecture projects, and technical expertise.
           </p>
           <button
             onClick={() => setIsChatOpen(true)}
@@ -113,7 +103,7 @@ export default function ChatbotPlaceholder() {
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   {messages.length === 0 && (
                     <div className="text-secondary text-sm">
-                      👋 Hi! I'm here to help you learn about Amarjeet's professional experience. Ask me anything about her skills, projects, or career!
+                      👋 Hi! I'm Amarjeet's AI assistant. Ask me about her AI solutions, full-stack development experience, AWS cloud projects, or any technical expertise. I'm powered by her Professional Dialog agent on Hugging Face!
                     </div>
                   )}
                   {messages.map((message, index) => (
