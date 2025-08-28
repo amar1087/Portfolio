@@ -1,69 +1,9 @@
 import { useState } from "react";
-import { MessageCircle, Send, X, Minimize2 } from "lucide-react";
-import { Client } from "@gradio/client";
+import { MessageCircle, X, Minimize2, ExternalLink } from "lucide-react";
 
 export default function ChatbotPlaceholder() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const getChatResponse = async (userMessage: string): Promise<string> => {
-    try {
-      const client = await Client.connect("amar1087/professional_dialogue");
-      
-      // Use function index 0 (first function) with positional arguments
-      const result = await client.predict(0, [userMessage]);
-      
-      // Handle the response data properly
-      if (result && result.data && Array.isArray(result.data)) {
-        return result.data[0] as string;
-      } else if (result && typeof result.data === 'string') {
-        return result.data as string;
-      } else if (typeof result === 'string') {
-        return result;
-      } else {
-        console.log('Full result:', result);
-        throw new Error('Unexpected response format from chatbot');
-      }
-    } catch (error) {
-      console.error('Hugging Face chatbot error:', error);
-      throw new Error('Failed to get response from chatbot');
-    }
-  };
-
-  const sendMessage = async () => {
-    if (!inputMessage.trim()) return;
-
-    const userMessage = inputMessage.trim();
-    setInputMessage('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
-    setIsLoading(true);
-
-    try {
-      const response = await getChatResponse(userMessage);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: response
-      }]);
-    } catch (error) {
-      console.error('Chatbot error:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: "I'm here to help you learn about Amarjeet's expertise in AI solutions, full-stack development, and cloud architecture. Please feel free to ask about her technical skills, projects, or experience!"
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8">
@@ -89,7 +29,7 @@ export default function ChatbotPlaceholder() {
 
         {/* Chat Interface */}
         {isChatOpen && (
-          <div className={`fixed bottom-4 right-4 bg-white rounded-lg shadow-2xl border border-slate-200 z-50 ${isMinimized ? 'h-16' : 'h-96'} w-80 flex flex-col`}>
+          <div className={`fixed bottom-4 right-4 bg-white rounded-lg shadow-2xl border border-slate-200 z-50 ${isMinimized ? 'h-16' : 'h-[600px]'} ${isMinimized ? 'w-80' : 'w-[800px]'} flex flex-col`}>
             {/* Chat Header */}
             <div className="bg-primary text-white px-4 py-3 rounded-t-lg flex justify-between items-center">
               <div className="flex items-center gap-2">
@@ -97,6 +37,15 @@ export default function ChatbotPlaceholder() {
                 <span className="font-medium">Professional Assistant</span>
               </div>
               <div className="flex items-center gap-2">
+                <a
+                  href="https://huggingface.co/spaces/amar1087/professional_dialogue"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/80 hover:text-white transition-colors"
+                  data-testid="link-open-external"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
                   className="text-white/80 hover:text-white transition-colors"
@@ -114,63 +63,16 @@ export default function ChatbotPlaceholder() {
               </div>
             </div>
 
-            {/* Chat Content */}
+            {/* Chat Content - Iframe */}
             {!isMinimized && (
-              <>
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                  {messages.length === 0 && (
-                    <div className="text-secondary text-sm">
-                      👋 Hi! I'm Amarjeet's AI assistant. Ask me about her AI solutions with CrewAI and LangGraph, full-stack development experience, AWS cloud projects, or any technical expertise!
-                    </div>
-                  )}
-                  {messages.map((message, index) => (
-                    <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
-                        message.role === 'user' 
-                          ? 'bg-primary text-white' 
-                          : 'bg-slate-100 text-slate-900'
-                      }`}>
-                        {message.content}
-                      </div>
-                    </div>
-                  ))}
-                  {isLoading && (
-                    <div className="flex justify-start">
-                      <div className="bg-slate-100 text-slate-900 px-3 py-2 rounded-lg text-sm">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                          <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Input */}
-                <div className="border-t border-slate-200 p-4">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Ask about my experience..."
-                      className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      data-testid="input-chat-message"
-                    />
-                    <button
-                      onClick={sendMessage}
-                      disabled={!inputMessage.trim() || isLoading}
-                      className="bg-primary text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      data-testid="button-send-message"
-                    >
-                      <Send className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </>
+              <div className="flex-1 overflow-hidden">
+                <iframe
+                  src="https://amar1087-professional-dialogue.hf.space"
+                  className="w-full h-full border-0 rounded-b-lg"
+                  title="Professional Dialogue Chatbot"
+                  data-testid="iframe-chatbot"
+                />
+              </div>
             )}
           </div>
         )}
