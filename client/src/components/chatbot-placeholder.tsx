@@ -29,7 +29,7 @@ export default function ChatbotPlaceholder() {
 
         {/* Chat Interface */}
         {isChatOpen && (
-          <div className={`fixed bottom-4 right-4 bg-white rounded-lg shadow-2xl border border-slate-200 z-50 ${isMinimized ? 'h-16' : 'h-[600px]'} ${isMinimized ? 'w-80' : 'w-[800px]'} flex flex-col`}>
+          <div className={`fixed bottom-4 right-4 bg-white rounded-lg shadow-2xl border border-slate-200 z-50 ${isMinimized ? 'h-16' : 'h-[300px]'} ${isMinimized ? 'w-80' : 'w-[400px]'} flex flex-col`}>
             {/* Chat Header */}
             <div className="bg-primary text-white px-4 py-3 rounded-t-lg flex justify-between items-center">
               <div className="flex items-center gap-2">
