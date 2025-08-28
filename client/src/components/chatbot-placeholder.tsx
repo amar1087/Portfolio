@@ -13,8 +13,8 @@ export default function ChatbotPlaceholder() {
     try {
       const client = await Client.connect("amar1087/professional_dialogue");
       
-      // Use positional arguments for the Gradio interface
-      const result = await client.predict("/predict", [userMessage]);
+      // Use function index 0 (first function) with positional arguments
+      const result = await client.predict(0, [userMessage]);
       
       // Handle the response data properly
       if (result && result.data && Array.isArray(result.data)) {
