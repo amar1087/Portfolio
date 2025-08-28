@@ -11,11 +11,20 @@ export default function ChatbotPlaceholder() {
 
   const getChatResponse = async (userMessage: string): Promise<string> => {
     try {
-      const client = await Client.connect("https://huggingface.co/spaces/amar1087/professional_dialogue");
-      const result = await client.predict("/chat", { 
-        message: userMessage 
+      const client = await Client.connect("amar1087/professional_dialogue");
+      const result = await client.predict("/predict", {
+        text: userMessage
       });
-      return result.data[0] as string;
+      
+      // Handle the response data properly
+      if (result && result.data && Array.isArray(result.data)) {
+        return result.data[0] as string;
+      } else if (result && typeof result.data === 'string') {
+        return result.data as string;
+      } else {
+        console.log('Full result:', result);
+        throw new Error('Unexpected response format from chatbot');
+      }
     } catch (error) {
       console.error('Hugging Face chatbot error:', error);
       throw new Error('Failed to get response from chatbot');
