@@ -13,20 +13,8 @@ export default function ChatbotPlaceholder() {
     try {
       const client = await Client.connect("amar1087/professional_dialogue");
       
-      // Try different possible endpoint formats
-      let result;
-      try {
-        // Try with function index 0 (first function)
-        result = await client.predict(0, { text: userMessage });
-      } catch (err) {
-        try {
-          // Try with different parameter structure
-          result = await client.predict(0, [userMessage]);
-        } catch (err2) {
-          // Try without function specification - use default
-          result = await client.predict(userMessage);
-        }
-      }
+      // Use positional arguments for the Gradio interface
+      const result = await client.predict("/predict", [userMessage]);
       
       // Handle the response data properly
       if (result && result.data && Array.isArray(result.data)) {
