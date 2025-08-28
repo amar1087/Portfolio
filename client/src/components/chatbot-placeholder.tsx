@@ -12,15 +12,29 @@ export default function ChatbotPlaceholder() {
   const getChatResponse = async (userMessage: string): Promise<string> => {
     try {
       const client = await Client.connect("amar1087/professional_dialogue");
-      const result = await client.predict("/predict", {
-        text: userMessage
-      });
+      
+      // Try different possible endpoint formats
+      let result;
+      try {
+        // Try with function index 0 (first function)
+        result = await client.predict(0, { text: userMessage });
+      } catch (err) {
+        try {
+          // Try with different parameter structure
+          result = await client.predict(0, [userMessage]);
+        } catch (err2) {
+          // Try without function specification - use default
+          result = await client.predict(userMessage);
+        }
+      }
       
       // Handle the response data properly
       if (result && result.data && Array.isArray(result.data)) {
         return result.data[0] as string;
       } else if (result && typeof result.data === 'string') {
         return result.data as string;
+      } else if (typeof result === 'string') {
+        return result;
       } else {
         console.log('Full result:', result);
         throw new Error('Unexpected response format from chatbot');
